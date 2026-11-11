@@ -13,7 +13,8 @@ and the trajectory of feed and replacement cow costs.
 
 ## Dashboard Preview
 
-*(Add a screenshot here once you've exported one — see Step 5.3)*
+<img width="484" height="284" alt="Screenshot 2026-11-11 203428" src="https://github.com/user-attachments/assets/525acbab-a5cf-464a-851b-ebdb6e982cde" />
+
 
 ---
 
