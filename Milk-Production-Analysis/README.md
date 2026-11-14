@@ -1,94 +1,61 @@
-
-
 # U.S. Milk Production Analysis (1998–2026)
 
-A Power BI dashboard analyzing 28 years of USDA quarterly milk production data. 
-Explores long-term production trends, the split between herd size and yield per cow, 
-and the trajectory of feed and replacement cow costs.
+An interactive 4-page Power BI report analyzing 28 years of USDA quarterly milk production data. This project explores long-term production trends, the drivers of industry growth (yield vs. herd size), and the impact of volatile feed and replacement cow costs.
 
-> **Built as a portfolio project** to demonstrate data cleaning, star-schema modeling, 
-> DAX measure design, and dashboard storytelling in Power BI.
-
----
+*Built as a portfolio project to demonstrate data cleaning, star-schema modeling, DAX measure design, and dashboard storytelling.*
 
 ## Dashboard Preview
 
-<img width="484" height="284" alt="Screenshot 2026-11-11 203428" src="https://github.com/user-attachments/assets/525acbab-a5cf-464a-851b-ebdb6e982cde" />
+### 1. Overview
+<img width="519" height="377" alt="Overview" src="https://github.com/user-attachments/assets/5dcfb8a0-6378-401c-9c8c-d9ea09f039ec" />
 
 
----
+### 2. Growth & Efficiency
+<img width="522" height="337" alt="Growth and Efficiency" src="https://github.com/user-attachments/assets/aeaa9f01-d96f-4d6e-b7b9-0f6a68d5d1b4" />
 
-## Key Findings
 
-- **Production grew 47%** from 1998 to 2025 (157B → 232B lbs), while the national 
-  herd **shrank 3%** over the same period.
-- **All production gains came from yield per cow**, which rose from 17,185 lbs/year 
-  to 24,390 lbs/year (+42%). Herd size has been essentially flat since 2010.
-- **Feed value peaked at $14.25/cwt** in 2022 Q3 — more than 3× the 1998 baseline — 
-  but has normalized to $8.50–9.50 in 2024–2025.
-- **Replacement cow prices hit an all-time high of $3,110/head** in 2025, suggesting 
-  continued tightening of replacement supply.
+### 3. Cost Structure
+<img width="526" height="292" alt="Cost Structure" src="https://github.com/user-attachments/assets/e3ba82f0-cc81-4347-87f4-50adc1f4ef74" />
 
----
 
-## Repository Structure
+### 4. Executive Summary & Data Notes
+<img width="509" height="281" alt="Executive Summary and Data Notes" src="https://github.com/user-attachments/assets/35170f72-fe45-4ad1-b3d2-35bf1ac81347" />
 
----
 
-## How It Was Built
+##  Key Findings
+*   **Production Growth:** U.S. milk production grew **47%** from 1998 to 2025 (157B to 232B lbs).
+*   **The Yield Engine:** The national herd size has remained virtually flat (~9,200–9,500 head). The entire production gain was driven by a **42% increase in yield per cow** (17,185 to 24,390 lbs).
+*   **Cost Pressures:** Feed costs peaked in 2008 and 2022. Replacement cow prices surged to all-time highs post-2020, squeezing farmer margins.
 
-**Data source:** USDA Economic Research Service, *U.S. quarterly milk production 
-and related data* (published August 13, 2026).
+## Data Preparation & Modeling
+**Data Source:** USDA Economic Research Service (*U.S. quarterly milk production and related data*, published Aug 2026).
 
-**Cleaning & transformation:**
-- Stripped footnote markers (`¹ ² ³`) from metric names
-- Split quarterly and annual rows into two separate fact tables to avoid double-counting
-- Preserved 2013 Q1–Q2 nulls (unavailable per USDA) — did not impute
-- Excluded partial 2026 data (Q1–Q2 only) from year-over-year comparisons
+**ETL & Data Cleaning (Power Query):**
+*   Stripped footnote markers (`¹ ² ³`) from metric names.
+*   **Grain Split:** Separated the raw data into two distinct Fact tables (`Quarterly` and `Annual`) to prevent double-counting.
+*   **Null Handling:** Preserved 2013 Q1–Q2 missing values (unavailable in source) rather than imputing them.
+*   **Partial Data Management:** Excluded 2026 from YoY calculations as the year is incomplete (only Q1–Q2 available).
 
-**Data model (star schema):**
-- **Fact tables:** `MilkData_Quarterly`, `MilkData_Annual`
-- **Dimensions:** `Calendar` (marked as date table), `DimMetric`
-- **Relationships:** 4 total, all 1:many, all single-direction
+**Data Model (Star Schema):**
+*   **Fact Tables:** `MilkData_Quarterly`, `MilkData_Annual`
+*   **Dimensions:** `Calendar` (marked as date table), `DimMetric`
+*   **Relationships:** 4 total, all 1:many, all single-direction. No ambiguous paths.
 
-**DAX measures (12 total):**
-- Core metrics: production, herd size, yield per cow, feed value, replacement price
-- Time intelligence: year-over-year % for production, herd, yield, and feed
-- Derived check: `Derived Milk per Cow` (production ÷ herd) to validate the stored yield value
-
----
-
-## How to Open
-
-1. Download `milk-production-dashboard.pbix`
-2. Open in **Power BI Desktop** (free download from Microsoft)
-3. All data is embedded — no external connection or credentials required
-
----
-
-## What I Learned
-
-- How to identify and separate **fact table grains** (quarterly vs. annual) to prevent silent double-counting
-- How to build a **star schema** with a proper `Calendar` table and a metric dimension
-- The difference between **SUM** (flow variables: production) and **AVERAGE** (stock variables: herd size, prices)
-- How to write **`SAMEPERIODLASTYEAR`** measures and validate them against source values
-- How to document data decisions so a reviewer can verify the numbers
-
----
+**DAX Highlights:**
+*   Used `CALCULATE` to filter metrics dynamically through the dimension table.
+*   Differentiated between **Flow variables** (SUM for production) and **Stock variables** (AVERAGE for herd size and prices).
+*   Implemented Time Intelligence (`SAMEPERIODLASTYEAR`) for YoY growth calculations.
+*   Created "Latest Snapshot" measures using `LASTNONBLANK` for the KPI cards.
 
 ## Known Limitations
+*   **No milk price column** in the source data — the classic USDA milk-feed ratio cannot be calculated.
+*   **2013 Q1–Q2** milk cow and yield values are null per the source.
+*   **2026 is partial** (Q1–Q2 only).
 
-- **No milk price column** in the source — the classic USDA milk-feed ratio cannot be computed from this data alone
-- **2013 Q1–Q2** milk cow and yield values are null per the source
-- **2026 is partial** (Q1–Q2 only at time of analysis)
-
----
-
-## License
-
-MIT - see [LICENSE](LICENSE) for details.
-
+## Repository Structure
+*   `milk-production-dashboard.pbix` - The interactive Power BI file.
+*   `data/` - The raw untouched USDA Excel file.
+*   `powerbi/screenshots/` - Page images for quick viewing.
 ---
 
 *Built by [Medupi Reginald Mathunyane]
-[quarterly-milk-factors.xlsx](https://github.com/user-attachments/files/34585802/quarterly-milk-factors.xlsx)
